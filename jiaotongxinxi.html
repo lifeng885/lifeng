@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>交通信息</title>
+  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+  <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+  <link href="../css/style.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=bba72c7b1080ac11f8684ab8cebbfcd7&plugin=AMap.Autocomplete,AMap.PlaceSearch"></script>
+  <style>
+   
+
+    .map {
+      height: 100%;
+      width: 100%;
+      float: left;
+    }
+
+    .info-title {
+      font-weight: bolder;
+      color: #fff;
+      font-size: 14px;
+      line-height: 26px;
+      padding: 0 0 0 6px;
+      background: #25A5F7
+    }
+
+    .info-content {
+      padding: 4px;
+      color: #666666;
+      line-height: 23px;
+      font: 12px Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial;
+    }
+
+    .info-content img {
+      float: left;
+      margin: 3px;
+    }
+
+    .amap-info-combo .keyword-input {
+      height: auto;
+    }
+    a{
+      color: black;
+      float: right;
+      text-decoration: none;
+    }
+  </style>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=bba72c7b1080ac11f8684ab8cebbfcd7&plugin=AMap.PlaceSearch,AMap.AdvancedInfoWindow"></script>
+
+  <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+
+<body>
+</style>
+<div id="top">
+  <div class="top_tu">
+
+  </div>
+</div>
+  <div id="container" class="map"></div>
+  <div id="myPageTop">
+    <table>
+        <tr>
+            <td>
+                <label>请输入景点名称：</label>
+            </td>
+            
+        </tr>
+        <tr>
+            <td>
+                <input id="tipinput"/>
+            </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="../index.html">返回</a>
+          </td>
+        </tr>
+    </table>
+</div>
+  <script>
+    var map = new AMap.Map('container', {
+      resizeEnable: true,
+      center: [118.175393,39.635113],
+      zoom: 13,
+      isHotspot: true
+    });
+    var placeSearch = new AMap.PlaceSearch();  
+    var infoWindow = new AMap.AdvancedInfoWindow({});
+    map.on('hotspotover', function (result) {
+      placeSearch.getDetails(result.id, function (status, result) {
+        if (status === 'complete' && result.info === 'OK') {
+          placeSearch_CallBack(result);
+        }
+      });
+    });
+   
+    function placeSearch_CallBack(data) {
+      var poiArr = data.poiList.pois;
+      var location = poiArr[0].location;
+      infoWindow.setContent(createContent(poiArr[0]));
+      infoWindow.open(map, location);
+    }
+    function createContent(poi) {  
+      var s = [];
+      s.push('<div class="info-title">' + poi.name + '</div><div class="info-content">' + "地址：" + poi.address);
+      s.push("电话：" + poi.tel);
+      s.push("类型：" + poi.type);
+      s.push('<div>');
+      return s.join("<br>");
+    }
+    var autoOptions = {
+        input: "tipinput"
+    };
+    var auto = new AMap.Autocomplete(autoOptions);
+    var placeSearch = new AMap.PlaceSearch({
+        map: map
+    }); 
+    AMap.event.addListener(auto, "select", select);
+    function select(e) {
+        placeSearch.setCity(e.poi.adcode);
+        placeSearch.search(e.poi.name);  
+    }
+  </script>
+</body>
+
+</html>
